@@ -162,6 +162,8 @@ Additional BSD Notice
 
 #include "lulesh.h"
 
+#define NOINLINE __attribute__((noinline))
+
 
 /*********************************/
 /* Data structure implementation */
@@ -191,7 +193,7 @@ void Release(T **ptr)
 
 /* Work Routines */
 
-static inline
+NOINLINE static
 void TimeIncrement(Domain& domain)
 {
    Real_t targetdt = domain.stoptime() - domain.time() ;
@@ -1129,7 +1131,7 @@ void CalcVolumeForceForElems(Domain& domain)
 
 /******************************************/
 
-static inline void CalcForceForNodes(Domain& domain)
+NOINLINE static void CalcForceForNodes(Domain& domain)
 {
   Index_t numNode = domain.numNode() ;
 
@@ -1164,7 +1166,7 @@ static inline void CalcForceForNodes(Domain& domain)
 
 /******************************************/
 
-static inline
+NOINLINE static
 void CalcAccelerationForNodes(Domain &domain, Index_t numNode)
 {
    
@@ -1178,7 +1180,7 @@ void CalcAccelerationForNodes(Domain &domain, Index_t numNode)
 
 /******************************************/
 
-static inline
+NOINLINE static
 void ApplyAccelerationBoundaryConditionsForNodes(Domain& domain)
 {
    Index_t size = domain.sizeX();
@@ -1208,7 +1210,7 @@ void ApplyAccelerationBoundaryConditionsForNodes(Domain& domain)
 
 /******************************************/
 
-static inline
+NOINLINE static
 void CalcVelocityForNodes(Domain &domain, const Real_t dt, const Real_t u_cut,
                           Index_t numNode)
 {
@@ -1234,7 +1236,7 @@ void CalcVelocityForNodes(Domain &domain, const Real_t dt, const Real_t u_cut,
 
 /******************************************/
 
-static inline
+NOINLINE static
 void CalcPositionForNodes(Domain &domain, const Real_t dt, Index_t numNode)
 {
 #pragma omp parallel for firstprivate(numNode)
@@ -1248,7 +1250,7 @@ void CalcPositionForNodes(Domain &domain, const Real_t dt, Index_t numNode)
 
 /******************************************/
 
-static inline
+NOINLINE static
 void LagrangeNodal(Domain& domain)
 {
 #ifdef SEDOV_SYNC_POS_VEL_EARLY
@@ -1597,7 +1599,7 @@ void CalcKinematicsForElems( Domain &domain, Real_t *vnew,
 
 /******************************************/
 
-static inline
+NOINLINE static
 void CalcLagrangeElements(Domain& domain, Real_t* vnew)
 {
    Index_t numElem = domain.numElem() ;
@@ -1971,7 +1973,7 @@ void CalcMonotonicQForElems(Domain& domain, Real_t vnew[])
 
 /******************************************/
 
-static inline
+NOINLINE static
 void CalcQForElems(Domain& domain, Real_t vnew[])
 {
    //
@@ -2354,7 +2356,7 @@ void EvalEOSForElems(Domain& domain, Real_t *vnewc,
 
 /******************************************/
 
-static inline
+NOINLINE static
 void ApplyMaterialPropertiesForElems(Domain& domain, Real_t vnew[])
 {
    Index_t numElem = domain.numElem() ;
@@ -2429,7 +2431,7 @@ void ApplyMaterialPropertiesForElems(Domain& domain, Real_t vnew[])
 
 /******************************************/
 
-static inline
+NOINLINE static
 void UpdateVolumesForElems(Domain &domain, Real_t *vnew,
                            Real_t v_cut, Index_t length)
 {
@@ -2450,7 +2452,7 @@ void UpdateVolumesForElems(Domain &domain, Real_t *vnew,
 
 /******************************************/
 
-static inline
+NOINLINE static
 void LagrangeElements(Domain& domain, Index_t numElem)
 {
   Real_t *vnew = Allocate<Real_t>(numElem) ;  /* new relative vol -- temp */
@@ -2612,7 +2614,7 @@ void CalcHydroConstraintForElems(Domain &domain, Index_t length,
 
 /******************************************/
 
-static inline
+NOINLINE static
 void CalcTimeConstraintsForElems(Domain& domain) {
 
    // Initialize conditions to a very large value
@@ -2636,7 +2638,7 @@ void CalcTimeConstraintsForElems(Domain& domain) {
 
 /******************************************/
 
-static inline
+NOINLINE static
 void LagrangeLeapFrog(Domain& domain)
 {
 #ifdef SEDOV_SYNC_POS_VEL_LATE
