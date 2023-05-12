@@ -3,14 +3,9 @@
 SHELL = /bin/sh
 .SUFFIXES: .cc .o
 
-LULESH_EXEC = lulesh2.0
-
-MPI_INC = /opt/local/include/openmpi
-MPI_LIB = /opt/local/lib
-
-SERCXX = g++ -DUSE_MPI=0
-MPICXX = mpig++ -DUSE_MPI=1
-CXX = $(MPICXX)
+# PREP = scorep
+# PREP_FLAGS = --llvm-plugin-arg=enable=0
+MPICXX = mpicxx -DUSE_MPI=1
 
 SOURCES2.0 = \
 	lulesh.cc \
@@ -19,6 +14,12 @@ SOURCES2.0 = \
 	lulesh-util.cc \
 	lulesh-init.cc
 OBJECTS2.0 = $(SOURCES2.0:.cc=.o)
+
+LULESH_EXEC = lulesh2.0
+ifdef PREP
+LULESH_EXEC = lulesh2.0-instr
+endif
+
 
 #Default build suggestions with OpenMP for g++
 CXXFLAGS = -g -O3 -fopenmp -I. -Wall
@@ -42,15 +43,15 @@ LDFLAGS = -g -O3 -fopenmp
 #CXXFLAGS = -g -DVIZ_MESH -I${SILO_INCDIR} -Wall -Wno-pragmas
 #LDFLAGS = -g -L${SILO_LIBDIR} -Wl,-rpath -Wl,${SILO_LIBDIR} -lsiloh5 -lhdf5
 
-.cc.o: lulesh.h
+%.o: %.cc lulesh.h
 	@echo "Building $<"
-	$(CXX) -c $(CXXFLAGS) -o $@  $<
+	$(PREP) $(PREP_FLAGS) $(MPICXX) -c $(CXXFLAGS) -o $@  $<
 
 all: $(LULESH_EXEC)
 
-lulesh2.0: $(OBJECTS2.0)
+$(LULESH_EXEC): $(OBJECTS2.0)
 	@echo "Linking"
-	$(CXX) $(OBJECTS2.0) $(LDFLAGS) -lm -o $@
+	$(PREP) $(PREP_FLAGS) $(MPICXX) $(OBJECTS2.0) $(LDFLAGS) -lm -o $@
 
 clean:
 	/bin/rm -f *.o *~ $(OBJECTS) $(LULESH_EXEC)
