@@ -2721,9 +2721,10 @@ int main(int argc, char *argv[])
 
    if ((myRank == 0) && (opts.quiet == 0)) {
       printf("Running problem size %d^3 per domain until completion\n", opts.nx);
-      printf("Num processors: %d\n", numRanks);
+      printf("Num MPI ranks: %d\n", numRanks);
 #if _OPENMP
       printf("Num threads: %d\n", omp_get_max_threads());
+      printf("Num procs: %d\n", omp_get_num_procs());
 #endif
       printf("Total number of elements: %lld\n\n", (long long int)(numRanks*opts.nx*opts.nx*opts.nx));
       printf("To run other sizes, use -s <integer>.\n");
